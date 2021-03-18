@@ -1,0 +1,161 @@
+{
+	"name": "sfdxmetahelper",
+	"description": "SFDX Metahelper - A helper to retrieve and deploy metadata with SFDX CLI",
+	"version": "1.0.0",
+	"publisher": "mitxi21",
+	"engines": {
+		"vscode": "^1.54.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onCommand:sfdxmetahelper.start",
+		"onWebviewPanel:sfdxmetahelper"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/mitxi21/sfdx-metahelper.git"
+	},
+	"main": "./out/extension.js",
+	"contributes": {
+		"configuration": {
+			"id": "sfdxmetahelper",
+			"title": "SFDX Metahelper",
+			"properties": {
+				"sfdxmetahelper.metadataTypes": {
+					"type": "array",
+					"default": [
+						"ApexClass",
+						"ApexComponent",
+						"ApexPage",
+						"ApexTestSuite",
+						"ApexTrigger",
+						"AppMenu",
+						"ApprovalProcess",
+						"AuraDefinitionBundle",
+						"ConnectedApp",
+						"ContentAsset",
+						"CspTrustedSite",
+						"CustomApplication",
+						"CustomApplicationComponent",
+						"CustomLabels",
+						"CustomMetadata",
+						"CustomObject",
+						"CustomObjectTranslation",
+						"CustomPermission",
+						"CustomSite",
+						"CustomTab",
+						"Dashboard",
+						"Document",
+						"DuplicateRule",
+						"EmailTemplate",
+						"ExternalDataSource",
+						"FlexiPage",
+						"Flow",
+						"FlowDefinition",
+						"GlobalValueSet",
+						"Group",
+						"HomePageLayout",
+						"Layout",
+						"Letterhead",
+						"MatchingRules",
+						"NamedCredential",
+						"PermissionSet",
+						"Profile",
+						"ProfilePasswordPolicy",
+						"Queue",
+						"QuickAction",
+						"RemoteSiteSetting",
+						"Report",
+						"ReportType",
+						"Role",
+						"Settings",
+						"SharingRules",
+						"StandardValueSet",
+						"StandardValueSetTranslation",
+						"StaticResource",
+						"Territory",
+						"TopicsForObjects",
+						"Translations",
+						"Workflow"
+					],
+					"description": "List of metadata types."
+				},
+				"sfdxmetahelper.metadataTemplates": {
+					"type": "object",
+					"default": {
+						"templates": [
+							{
+								"name": "ObjectTranslations",
+								"values": [
+									"CustomObject",
+									"CustomObjectTranslation"
+								]
+							},
+							{
+								"name": "Profiles and related",
+								"values": [
+									"ApexClass",
+									"ApexPage",
+									"CustomApplication",
+									"CustomMetadata",
+									"CustomObject",
+									"CustomPermission",
+									"CustomTab",
+									"FlexiPage",
+									"Group",
+									"Layout",
+									"Profile"
+								]
+							},
+							{
+								"name": "Translations",
+								"values": [
+									"CustomLabels",
+									"CustomTab",
+									"ReportType",
+									"Translations"
+								]
+							}
+						]
+					},
+					"description": "Metadata templates to autoselect the metadata types."
+				},
+				"sfdxmetahelper.defaultAPI": {
+					"type": "string",
+					"default": "50.0",
+					"description": "Default API version to add to the commands generated."
+				}
+			}
+		},
+		"commands": [
+			{
+				"command": "sfdxmetahelper.start",
+				"title": "Open",
+				"category": "SFDX MetaHelper"
+			}
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"lint": "eslint . --ext .ts,.tsx",
+		"watch": "tsc -w -p ./"
+	},
+	"dependencies": {
+		"clipboardy": "^2.1.0"
+	},
+	"devDependencies": {
+		"@types/node": "^12.12.0",
+		"@types/vscode": "^1.54.0",
+		"@typescript-eslint/eslint-plugin": "^4.16.0",
+		"@typescript-eslint/parser": "^4.16.0",
+		"eslint": "^7.21.0",
+		"typescript": "^4.2.2"
+	},
+	"extensionDependencies": [
+		"salesforce.salesforcedx-vscode"
+	],
+	"license": "SEE LICENSE IN LICENSE FILE"
+}
