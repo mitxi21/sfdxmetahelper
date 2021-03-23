@@ -290,7 +290,7 @@ class sfdxMetahelperPanel {
 				}
 				if (simpleListMetadata)
 				{
-					const resultMetadata: { fullName: any; metadataType: any; folder: string; simpleListMetadata: boolean, addWildcard: boolean}[] = [];
+					const resultMetadata: { fullName: any; metadataType: any; folderName: string; simpleListMetadata: boolean, addWildcard: boolean, folderMeta: string}[] = [];
 					const cmd = "sfdx force:mdapi:listmetadata --apiversion " + apiVersion + " --targetusername " + user + " --metadatatype " + metadataTypesSplitted[i] + " --json";
 					const p = new Promise(resolve => {
 						vscode.window.withProgress({
@@ -305,7 +305,7 @@ class sfdxMetahelperPanel {
 						
 						}).then((res: any) => {
 							const folderName = metadataTypesSplitted[i];
-							if (res.result == "undefined")
+							if (res.result == "undefined" || !res)
 							{
 								console.log("Metadata Type not supported.");
 								return;
@@ -321,22 +321,25 @@ class sfdxMetahelperPanel {
 							}
 							for(const j in metadataDict)
 							{
-								let nameToAdd = metadataDict[j].fullName;
-								if ("namespacePrefix" in metadataDict[j])
+								if ("fullName" in metadataDict[j])
 								{
-									if (needPrefixAddition)
+									let nameToAdd = metadataDict[j].fullName;
+									if ("namespacePrefix" in metadataDict[j])
 									{
-										if (specialReplace)
+										if (needPrefixAddition)
 										{
-											nameToAdd = nameToAdd.replace(charMetaSeparator, charMetaSeparator + metadataDict[j].namespacePrefix + "__", 1);
-										}
-										else
-										{
-											nameToAdd = nameToAdd.replace(charMetaSeparator, charMetaSeparator + metadataDict[j].namespacePrefix + "__");
+											if (specialReplace)
+											{
+												nameToAdd = nameToAdd.replace(charMetaSeparator, charMetaSeparator + metadataDict[j].namespacePrefix + "__", 1);
+											}
+											else
+											{
+												nameToAdd = nameToAdd.replace(charMetaSeparator, charMetaSeparator + metadataDict[j].namespacePrefix + "__");
+											}
 										}
 									}
+									resultMetadata.push({fullName: nameToAdd, metadataType: metadataTypesSplitted[i], folderName: folderName, simpleListMetadata: simpleListMetadata, addWildcard: addWildcard, folderMeta: ""});
 								}
-								resultMetadata.push({fullName: nameToAdd, metadataType: metadataTypesSplitted[i], folder: folderName, simpleListMetadata: simpleListMetadata, addWildcard: addWildcard});
 							}
 							this._panel.webview.postMessage({ command: 'metadataTypeListed', metadataType: metadataTypesSplitted[i], results : resultMetadata});
 						});
@@ -344,7 +347,7 @@ class sfdxMetahelperPanel {
 				}
 				else
 				{
-					const resultMetadata: { fullName: any; metadataType: any; folder: string; simpleListMetadata: boolean, addWildcard: boolean}[] = [];
+					const resultMetadata: { fullName: any; metadataType: any; folderName: string; simpleListMetadata: boolean, addWildcard: boolean, folderMeta: string}[] = [];
 					const cmd = "sfdx force:mdapi:listmetadata --apiversion " + apiVersion + " --targetusername " + user + " --metadatatype " + folder + " --json";
 					const p = new Promise(resolve => {
 						vscode.window.withProgress({
@@ -358,7 +361,7 @@ class sfdxMetahelperPanel {
 							return this.execCmd(cmd);
 						
 						}).then((res: any) => {
-							if (res.result == "undefined")
+							if (res.result == "undefined" || !res)
 							{
 								console.log("Metadata Type not supported.");
 								return;
@@ -374,45 +377,51 @@ class sfdxMetahelperPanel {
 							}
 							for (const j in metadataFolders)
 							{
-								const folderName = metadataFolders[j].fullName;
-								const cmd = "sfdx force:mdapi:listmetadata --apiversion " + apiVersion + " --targetusername " + user + " --metadatatype " + metadataTypesSplitted[i] + " --folder " + folderName + " --json";
-								const p = new Promise(resolve => {
-									vscode.window.withProgress({
-										location: vscode.ProgressLocation.Notification,
-										title: "List " + folderName,
-										cancellable: true
-									}, (progress, token) => {
-										token.onCancellationRequested(() => {
-											console.log("Canceled");
-										});
-										return this.execCmd(cmd);
-									
-									}).then((res2: any) => {
+								if ("fullName" in metadataFolders[j])
+								{
+									const folderName = metadataFolders[j].fullName;
+									const cmd = "sfdx force:mdapi:listmetadata --apiversion " + apiVersion + " --targetusername " + user + " --metadatatype " + metadataTypesSplitted[i] + " --folder " + folderName + " --json";
+									const p = new Promise(resolve => {
+										vscode.window.withProgress({
+											location: vscode.ProgressLocation.Notification,
+											title: "List " + folderName,
+											cancellable: true
+										}, (progress, token) => {
+											token.onCancellationRequested(() => {
+												console.log("Canceled");
+											});
+											return this.execCmd(cmd);
 										
-										if (res2.result == "undefined")
-										{
-											console.log("Metadata Type not supported.");
-											return;
-										}
-										console.log(res2.result);
-										let metadataDict = [];
-										if (Array.isArray(res2.result))
-										{
-											metadataDict = res2.result;
-										}
-										else
-										{
-											metadataDict.push(res2.result);
-										}
-										for(const h in metadataDict)
-										{
-											const nameToAdd = metadataDict[h].fullName;
-											resultMetadata.push({fullName: nameToAdd, metadataType: metadataTypesSplitted[i], folder: folderName, simpleListMetadata: simpleListMetadata, addWildcard: addWildcard});
-										}
-										console.log(resultMetadata);
-										this._panel.webview.postMessage({ command: 'metadataTypeListed', metadataType: metadataTypesSplitted[i], results : resultMetadata});
+										}).then((res2: any) => {
+											
+											if (res2.result == "undefined" || !res)
+											{
+												console.log("Metadata Type not supported.");
+												return;
+											}
+											console.log(res2.result);
+											let metadataDict = [];
+											if (Array.isArray(res2.result))
+											{
+												metadataDict = res2.result;
+											}
+											else
+											{
+												metadataDict.push(res2.result);
+											}
+											for(const h in metadataDict)
+											{
+												if ("fullName" in metadataDict[h])
+												{
+													const nameToAdd = metadataDict[h].fullName;
+													resultMetadata.push({fullName: nameToAdd, metadataType: metadataTypesSplitted[i], folderName: folderName, simpleListMetadata: simpleListMetadata, addWildcard: addWildcard, folderMeta: folder});
+												}
+											}
+											console.log(resultMetadata);
+											this._panel.webview.postMessage({ command: 'metadataTypeListed', metadataType: metadataTypesSplitted[i], results : resultMetadata});
+										});
 									});
-								});
+								}
 							}
 						});
 					});
@@ -481,6 +490,12 @@ class sfdxMetahelperPanel {
 				//console.log('bufferOutData '+bufferOutData);
 				
 				const data = JSON.parse(bufferOutData);
+				if (code == 1)
+				{
+					vscode.window.showErrorMessage(data.message);
+					resolve(false);
+					return;
+				}
 				//let results = data.result;
 				resolve(data);
 				return data;
@@ -624,7 +639,7 @@ class sfdxMetahelperPanel {
 							</tr>
 							<tr>
 								<td>
-									<button ng-click="previewMetadata(userSelected,displayMetadataTypesSelected)">List Metadata</button>
+									<button ng-click="previewMetadata()">List Metadata</button>
 								</td>
 							</tr>
 						</table>
@@ -671,7 +686,7 @@ class sfdxMetahelperPanel {
 													</td>
 												</tr>
 											</table>
-											<select multiple ng-model="selectedMetadataElems[metaElem.name]" ng-change="finalMetadataSelected()" ng-options="u.fullName group by u.folder for u in metaElem.metadataRecords | orderBy:'fullName' | filter:filterMetadata[metaElem.name]" ng-selected="selected" class="metadataListed">
+											<select multiple ng-model="selectedMetadataElems[metaElem.name]" ng-change="finalMetadataSelected()" ng-options="u.fullName group by u.folderName for u in metaElem.metadataRecords | orderBy:'fullName' | filter:filterMetadata[metaElem.name]" ng-selected="selected" class="metadataListed">
 											</select>
 										</div>
 										<br/>

@@ -123,7 +123,7 @@ app.controller('MyController', function($scope, $window) {
         var metaItems = "";
         var wildcardToAdd = false;
         var typesAdded = false;
-        var foldersAdded = [];
+        var foldersNameAdded = [];
         if ($scope.selectedMetadataElems.length == 0)
         {
             return;
@@ -160,10 +160,11 @@ app.controller('MyController', function($scope, $window) {
                 }
                 if (!$scope.selectedMetadataElems[metaName][j].simpleListMetadata)
                 {
-                    if (!foldersAdded.includes($scope.selectedMetadataElems[metaName][j].folder))
+                    if (!foldersNameAdded.includes($scope.selectedMetadataElems[metaName][j].folderName))
                     {
-                        foldersAdded.push($scope.selectedMetadataElems[metaName][j].folder);
-                        $scope.manifestPackageXml += '\t\t<members>' + $scope.selectedMetadataElems[metaName][j].folder + '</members>\n';
+                        foldersNameAdded.push($scope.selectedMetadataElems[metaName][j].folderName);
+                        $scope.manifestPackageXml += '\t\t<members>' + $scope.selectedMetadataElems[metaName][j].folderName + '</members>\n';
+                        metaItems += "," + $scope.selectedMetadataElems[metaName][j].folderMeta + ":" + $scope.selectedMetadataElems[metaName][j].folderName;
                     }
                 }
                 $scope.manifestPackageXml += '\t\t<members>' + $scope.selectedMetadataElems[metaName][j].fullName + '</members>\n';
@@ -191,9 +192,9 @@ app.controller('MyController', function($scope, $window) {
         $scope.manifestPackageXml += '\t<version>' + $scope.apiVersion + '</version>\n';
         $scope.manifestPackageXml += '</Package>\n';
 
-        $scope.sfdxSourceMetaCommandSuggestedText = "force:source:retrieve --targetusername " +  $scope.userSelected + " --apiversion " + $scope.apiVersion + " --metadata " + $scope.finalMetadataSelectedByType;
-        $scope.sfdxMdapiPkgCommandSuggestedText = "force:mdapi:retrieve --targetusername " +  $scope.userSelected + " --apiversion " + $scope.apiVersion + ' --unpackaged  "PathToFile"';
-        $scope.sfdxSourcePkgCommandSuggestedText = "force:source:retrieve --targetusername " +  $scope.userSelected + " --apiversion " + $scope.apiVersion + ' --manifest "PathToFile"';
+        $scope.sfdxSourceMetaCommandSuggestedText = "sfdx  force:source:retrieve --targetusername " +  $scope.userList.value + " --apiversion " + $scope.apiVersion + " --metadata " + $scope.finalMetadataSelectedByType;
+        $scope.sfdxMdapiPkgCommandSuggestedText = "sfdx force:mdapi:retrieve --targetusername " +  $scope.userList.value + " --apiversion " + $scope.apiVersion + ' --unpackaged  "PathToFile"';
+        $scope.sfdxSourcePkgCommandSuggestedText = "sfdx force:source:retrieve --targetusername " +  $scope.userList.value + " --apiversion " + $scope.apiVersion + ' --manifest "PathToFile"';
         $scope.$apply();
     };
 
@@ -277,13 +278,13 @@ app.controller('MyController', function($scope, $window) {
         });
     };
 
-    $scope.previewMetadata = function(userSelected, displayMetadataTypesSelected) {
+    $scope.previewMetadata = function() {
         $scope.metadataTypesListed = [];
         $scope.selectedMetadataElems = {};
         vscode.postMessage({
             command: 'previewMetadata',
-            user: userSelected,
-            metadataTypes: displayMetadataTypesSelected
+            user: $scope.userList.value,
+            metadataTypes: $scope.displayMetadataTypesSelected
         });
         $scope.$apply();
     };
@@ -358,8 +359,8 @@ app.controller('MyController', function($scope, $window) {
                 break;
             case 'fileSaved':
                 $scope.filePath = message.results;
-                $scope.sfdxMdapiPkgCommandSuggestedText = "force:mdapi:retrieve --targetusername " +  $scope.userSelected + " --apiversion " + $scope.apiVersion + ' --unpackaged "' + $scope.filePath + '"';
-                $scope.sfdxSourcePkgCommandSuggestedText = "force:source:retrieve --targetusername " +  $scope.userSelected + " --apiversion " + $scope.apiVersion + ' --manifest "' + $scope.filePath + '"';
+                $scope.sfdxMdapiPkgCommandSuggestedText = "sfdx force:mdapi:retrieve --targetusername " +  $scope.userList.value + " --apiversion " + $scope.apiVersion + ' --unpackaged "' + $scope.filePath + '"';
+                $scope.sfdxSourcePkgCommandSuggestedText = "sfdx force:source:retrieve --targetusername " +  $scope.userList.value + " --apiversion " + $scope.apiVersion + ' --manifest "' + $scope.filePath + '"';
                 $scope.$apply(function(){ //code 
                 });
                 break;
