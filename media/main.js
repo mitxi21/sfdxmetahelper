@@ -118,9 +118,7 @@ app.controller('MyController', function($scope, $window) {
     $scope.finalMetadataSelected = function() {
         $scope.finalMetadataSelectedByType = "";
         $scope.manifestPackageXml = "";
-        var firstMeta = true;
         var first = true;
-        var metaItems = "";
         var wildcardToAdd = false;
         var typesAdded = false;
         var foldersNameAdded = [];
@@ -133,8 +131,6 @@ app.controller('MyController', function($scope, $window) {
         $scope.manifestPackageXml += '<Package xmlns="http://soap.sforce.com/2006/04/metadata">\n';
         for (metaName in $scope.selectedMetadataElems)
         {
-            metaItems = "";
-            first = true;
             wildcardToAdd = false;
             typesAdded = false;
             foldersAdded = [];
@@ -142,12 +138,12 @@ app.controller('MyController', function($scope, $window) {
             {
                 if (first)
                 {
-                    metaItems += $scope.selectedMetadataElems[metaName][j].fullName;
+                    $scope.finalMetadataSelectedByType += metaName + ":" + $scope.selectedMetadataElems[metaName][j].fullName;
                     first = false;
                 }
                 else
                 {
-                    metaItems += "," + $scope.selectedMetadataElems[metaName][j].fullName;
+                    $scope.finalMetadataSelectedByType += "," + metaName + ":" + $scope.selectedMetadataElems[metaName][j].fullName;
                 }
                 if (!typesAdded)
                 {
@@ -178,21 +174,12 @@ app.controller('MyController', function($scope, $window) {
                 $scope.manifestPackageXml += '\t\t<name>' + metaName + '</name>\n';
                 $scope.manifestPackageXml += '\t</types>\n';
             }
-            if (firstMeta)
-            {
-                $scope.finalMetadataSelectedByType += metaName + ":" + metaItems;
-                firstMeta = false;
-            }
-            else
-            {
-                $scope.finalMetadataSelectedByType += "," + metaName + ":" + metaItems;
-            }
         }
         $scope.finalMetadataSelectedByType += "\"";
         $scope.manifestPackageXml += '\t<version>' + $scope.apiVersion + '</version>\n';
         $scope.manifestPackageXml += '</Package>\n';
 
-        $scope.sfdxSourceMetaCommandSuggestedText = "sfdx  force:source:retrieve --targetusername " +  $scope.userList.value + " --apiversion " + $scope.apiVersion + " --metadata " + $scope.finalMetadataSelectedByType;
+        $scope.sfdxSourceMetaCommandSuggestedText = "sfdx force:source:retrieve --targetusername " +  $scope.userList.value + " --apiversion " + $scope.apiVersion + " --metadata " + $scope.finalMetadataSelectedByType;
         $scope.sfdxMdapiPkgCommandSuggestedText = "sfdx force:mdapi:retrieve --targetusername " +  $scope.userList.value + " --apiversion " + $scope.apiVersion + ' --unpackaged  "PathToFile"';
         $scope.sfdxSourcePkgCommandSuggestedText = "sfdx force:source:retrieve --targetusername " +  $scope.userList.value + " --apiversion " + $scope.apiVersion + ' --manifest "PathToFile"';
         $scope.$apply();
