@@ -176,6 +176,9 @@ class sfdxMetahelperPanel {
 					case 'saveFile':
 						this.saveFile(message.text);
 						return;
+					case 'setFolder':
+						this.setFolder();
+						return;
 					case 'initialize':
 						this.init();
 						return;
@@ -238,7 +241,8 @@ class sfdxMetahelperPanel {
 
 	public copyToClipboard(value:any) {
 		clipboardy.write(value).then((result:any)=>{
-			vscode.window.showInformationMessage("Copied to clipboard");
+			//vscode.window.showInformationMessage("Copied to clipboard");
+			vscode.window.setStatusBarMessage("Copied to clipboard", 5000);
 		});
 	}
 
@@ -518,6 +522,22 @@ class sfdxMetahelperPanel {
 			});
 	}
 
+	private setFolder()
+	{
+		const options: vscode.OpenDialogOptions = {
+			canSelectMany: false,
+			openLabel: 'Select Folder',
+			canSelectFiles: false,
+			canSelectFolders: true
+		}; 
+		vscode.window.showOpenDialog(options).then(fileUri => {
+			if (fileUri && fileUri[0]) {
+				//console.log('Selected folder: ' + fileUri[0].fsPath);
+				this._panel.webview.postMessage({ command: 'folderSet', results : fileUri[0].fsPath});
+			}
+		});
+	}
+
 	private _getHtmlForWebview(webview: vscode.Webview) {
 		// Local path to main script run in the webview
 		const scriptPathOnDisk = vscode.Uri.joinPath(this._extensionUri, 'media', 'main.js');
@@ -756,6 +776,9 @@ class sfdxMetahelperPanel {
 							<tr>
 								<td>
 									<h3>SFDX MDAPI Retrieve Package Command Suggested:</h3>
+								</td>
+								<td>
+									<button ng-click="setFolder()">Set Folder</button>
 								</td>
 								<td>
 									<button ng-click="copyToClipboard(sfdxMdapiPkgCommandSuggestedText)">Copy to clipboard</button>

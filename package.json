@@ -1,7 +1,7 @@
 {
 	"name": "sfdxmetahelper",
 	"description": "SFDX Metahelper - A helper to retrieve and deploy metadata with SFDX CLI",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"publisher": "mitxi21",
 	"engines": {
 		"vscode": "^1.54.0"
@@ -15,7 +15,7 @@
 	],
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/mitxi21/sfdx-metahelper.git"
+		"url": "https://github.com/mitxi21/sfdxmetahelper"
 	},
 	"main": "./out/extension.js",
 	"contributes": {
@@ -33,6 +33,7 @@
 						"ApexTrigger",
 						"AppMenu",
 						"ApprovalProcess",
+						"Audience",
 						"AuraDefinitionBundle",
 						"ConnectedApp",
 						"ContentAsset",
@@ -46,10 +47,12 @@
 						"CustomPermission",
 						"CustomSite",
 						"CustomTab",
+						"CustomPageWebLink",
 						"Dashboard",
 						"Document",
 						"DuplicateRule",
 						"EmailTemplate",
+						"ExperienceBundle",
 						"ExternalDataSource",
 						"FlexiPage",
 						"Flow",
@@ -61,6 +64,8 @@
 						"Letterhead",
 						"MatchingRules",
 						"NamedCredential",
+						"Network",
+						"NavigationMenu",
 						"PermissionSet",
 						"Profile",
 						"ProfilePasswordPolicy",
@@ -70,6 +75,7 @@
 						"Report",
 						"ReportType",
 						"Role",
+						"Scontrol",
 						"Settings",
 						"SharingRules",
 						"StandardValueSet",
@@ -87,10 +93,32 @@
 					"default": {
 						"templates": [
 							{
-								"name": "ObjectTranslations",
+								"name": "Full set of translations",
+								"values": [
+									"CustomApplication",
+									"CustomLabels",
+									"CustomObject",
+									"CustomObjectTranslation",
+									"CustomTab",
+									"CustomPageWebLink",
+									"FlowDefinition",
+									"GlobalValueSet",
+									"Layout",
+									"QuickAction",
+									"ReportType",
+									"StandardValueSet",
+									"StandardValueSetTranslation",
+									"Translations",
+									"Scontrol"
+								]
+							},
+							{
+								"name": "Object translations",
 								"values": [
 									"CustomObject",
-									"CustomObjectTranslation"
+									"CustomObjectTranslation",
+									"Layout",
+									"QuickAction"
 								]
 							},
 							{
@@ -115,6 +143,7 @@
 									"CustomLabels",
 									"CustomTab",
 									"ReportType",
+									"QuickAction",
 									"Translations"
 								]
 							}
@@ -124,7 +153,7 @@
 				},
 				"sfdxmetahelper.defaultAPI": {
 					"type": "string",
-					"default": "50.0",
+					"default": "51.0",
 					"description": "Default API version to add to the commands generated."
 				}
 			}
@@ -157,5 +186,7 @@
 	"extensionDependencies": [
 		"salesforce.salesforcedx-vscode"
 	],
-	"license": "SEE LICENSE IN LICENSE FILE"
+	"license": "SEE LICENSE IN LICENSE",
+	"homepage": "https://github.com/mitxi21/sfdxmetahelper/blob/main/README.md",
+	"icon": "images/icon.png"
 }

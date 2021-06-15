@@ -46,7 +46,8 @@ app.controller('MyController', function($scope, $window) {
     $scope.sfdxSourceMetaCommandSuggestedText = "";
     $scope.sfdxMdapiPkgCommandSuggestedText = "";
     $scope.sfdxSourcePkgCommandSuggestedText = "";
-    $scope.filePath = "";
+    $scope.filePath = 'PathToFile';
+    $scope.folderPath = 'PathToFolder';
 
     $scope.init = function() {
         vscode.postMessage({
@@ -133,7 +134,7 @@ app.controller('MyController', function($scope, $window) {
         {
             wildcardToAdd = false;
             typesAdded = false;
-            foldersAdded = [];
+            foldersNameAdded = [];
             for (j in $scope.selectedMetadataElems[metaName])
             {
                 if (first)
@@ -160,7 +161,7 @@ app.controller('MyController', function($scope, $window) {
                     {
                         foldersNameAdded.push($scope.selectedMetadataElems[metaName][j].folderName);
                         $scope.manifestPackageXml += '\t\t<members>' + $scope.selectedMetadataElems[metaName][j].folderName + '</members>\n';
-                        metaItems += "," + $scope.selectedMetadataElems[metaName][j].folderMeta + ":" + $scope.selectedMetadataElems[metaName][j].folderName;
+                        $scope.finalMetadataSelectedByType += "," + $scope.selectedMetadataElems[metaName][j].folderMeta + ":" + $scope.selectedMetadataElems[metaName][j].folderName;
                     }
                 }
                 $scope.manifestPackageXml += '\t\t<members>' + $scope.selectedMetadataElems[metaName][j].fullName + '</members>\n';
@@ -180,8 +181,8 @@ app.controller('MyController', function($scope, $window) {
         $scope.manifestPackageXml += '</Package>\n';
 
         $scope.sfdxSourceMetaCommandSuggestedText = "sfdx force:source:retrieve --targetusername " +  $scope.userList.value + " --apiversion " + $scope.apiVersion + " --metadata " + $scope.finalMetadataSelectedByType;
-        $scope.sfdxMdapiPkgCommandSuggestedText = "sfdx force:mdapi:retrieve --targetusername " +  $scope.userList.value + " --apiversion " + $scope.apiVersion + ' --unpackaged  "PathToFile"';
-        $scope.sfdxSourcePkgCommandSuggestedText = "sfdx force:source:retrieve --targetusername " +  $scope.userList.value + " --apiversion " + $scope.apiVersion + ' --manifest "PathToFile"';
+        $scope.sfdxMdapiPkgCommandSuggestedText = "sfdx force:mdapi:retrieve --targetusername " +  $scope.userList.value + " --apiversion " + $scope.apiVersion + ' --unpackaged "' + $scope.filePath + '" --retrievetargetdir "' + $scope.folderPath + '"';
+        $scope.sfdxSourcePkgCommandSuggestedText = "sfdx force:source:retrieve --targetusername " +  $scope.userList.value + " --apiversion " + $scope.apiVersion + ' --manifest "' + $scope.filePath + '"';
         $scope.$apply();
     };
 
@@ -282,6 +283,13 @@ app.controller('MyController', function($scope, $window) {
             text: data
         });
     };
+
+    $scope.setFolder = function() {
+        vscode.postMessage({
+            command: 'setFolder',
+            text: "Set Folder"
+        });
+    };
   
 
     window.addEventListener('message', event => {
@@ -346,7 +354,14 @@ app.controller('MyController', function($scope, $window) {
                 break;
             case 'fileSaved':
                 $scope.filePath = message.results;
-                $scope.sfdxMdapiPkgCommandSuggestedText = "sfdx force:mdapi:retrieve --targetusername " +  $scope.userList.value + " --apiversion " + $scope.apiVersion + ' --unpackaged "' + $scope.filePath + '"';
+                $scope.sfdxMdapiPkgCommandSuggestedText = "sfdx force:mdapi:retrieve --targetusername " +  $scope.userList.value + " --apiversion " + $scope.apiVersion + ' --unpackaged "' + $scope.filePath + '"' + ' --retrievetargetdir "' + $scope.folderPath + '"';
+                $scope.sfdxSourcePkgCommandSuggestedText = "sfdx force:source:retrieve --targetusername " +  $scope.userList.value + " --apiversion " + $scope.apiVersion + ' --manifest "' + $scope.filePath + '"';
+                $scope.$apply(function(){ //code 
+                });
+                break;
+            case 'folderSet':
+                $scope.folderPath = message.results;
+                $scope.sfdxMdapiPkgCommandSuggestedText = "sfdx force:mdapi:retrieve --targetusername " +  $scope.userList.value + " --apiversion " + $scope.apiVersion + ' --unpackaged "' + $scope.filePath + '"' + ' --retrievetargetdir "' + $scope.folderPath + '"';
                 $scope.sfdxSourcePkgCommandSuggestedText = "sfdx force:source:retrieve --targetusername " +  $scope.userList.value + " --apiversion " + $scope.apiVersion + ' --manifest "' + $scope.filePath + '"';
                 $scope.$apply(function(){ //code 
                 });
